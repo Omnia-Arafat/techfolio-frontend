@@ -1,4 +1,5 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+// All API calls now go to Next.js route handlers — no external backend needed
+const API_URL = "/api";
 
 export async function fetchApi<T>(
   endpoint: string,
