@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   if (!token) return unauthorized();
 
   const { data, error } = await supabase.auth.getUser(token);
-  if (error || !data.user) return unauthorized("Session expired — please sign in again");
+  if (error || !data.user) return unauthorized("Session expired - please sign in again");
 
   const { data: user, error: userErr } = await supabase
     .from("users")

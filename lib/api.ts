@@ -1,4 +1,4 @@
-// All API calls now go to Next.js route handlers — no external backend needed
+// All API calls now go to Next.js route handlers - no external backend needed
 const API_URL = "/api";
 
 export async function fetchApi<T>(
