@@ -78,7 +78,7 @@ export default function AdminPage() {
         </div>
 
         {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 32 }}>
+        <div className="admin-stats-grid" style={{ display: "grid", gap: 12, marginBottom: 32 }}>
           {loadingData ? (
             [1,2,3].map(i => (
               <div key={i} style={{ ...card, padding: "18px 20px", display: "flex", alignItems: "center", gap: 14 }}>
@@ -157,7 +157,7 @@ export default function AdminPage() {
                     </div>
 
                     {/* Right: actions */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+                    <div className="admin-actions" style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
                       {company.status === "PENDING" && (
                         <>
                           <button

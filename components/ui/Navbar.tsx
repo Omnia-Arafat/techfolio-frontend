@@ -1,13 +1,14 @@
 ﻿"use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useTheme } from "@/lib/theme-context";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Menu, X } from "lucide-react";
 
 const linkStyle = (isActive: boolean) => ({
-  padding: "7px 16px",
+  padding: "8px 14px",
   borderRadius: "8px",
   fontSize: "13px" as const,
   fontWeight: 500 as const,
@@ -16,6 +17,7 @@ const linkStyle = (isActive: boolean) => ({
   background: isActive ? "var(--accent-purple-bg)" : "transparent",
   border: isActive ? "1px solid var(--accent-purple-border)" : "1px solid transparent",
   transition: "all 0.2s ease",
+  display: "block",
 });
 
 export default function Navbar() {
@@ -23,68 +25,70 @@ export default function Navbar() {
   const router = useRouter();
   const { user, logout, isAdmin, isCompany, loading } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     router.push("/");
+    setMenuOpen(false);
   };
 
-  return (
-    <nav style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-      padding: "16px 28px",
-      background: "var(--bg-nav)",
-      backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
-      borderBottom: "1px solid var(--bg-nav-border)",
-      transition: "background 0.3s ease, border-color 0.3s ease",
-    }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Link href="/" className="nav-logo">
-          TechFolio
-        </Link>
+  const close = () => setMenuOpen(false);
 
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+  return (
+    <nav className="navbar">
+      <div className="navbar-inner">
+        <Link href="/" className="nav-logo" onClick={close}>TechFolio</Link>
+
+        {/* Desktop links */}
+        <div className="nav-links">
           <Link href="/" style={linkStyle(pathname === "/")}>Companies</Link>
           <Link href="/positions" style={linkStyle(pathname === "/positions")}>Jobs & Collabs</Link>
-
           {!loading && !user && (
             <>
               <Link href="/register" style={linkStyle(pathname === "/register")}>List Your Company</Link>
               <Link href="/login" style={linkStyle(pathname === "/login")}>Sign In</Link>
             </>
           )}
-
-          {isCompany && (
-            <Link href="/dashboard" style={linkStyle(pathname === "/dashboard")}>My Company</Link>
-          )}
-
-          {isAdmin && (
-            <Link href="/admin" style={linkStyle(pathname === "/admin")}>Admin Panel</Link>
-          )}
-
-          {/* Theme toggle */}
-          <button onClick={toggleTheme} title={isDark ? "Switch to light mode" : "Switch to dark mode"} style={{
-            padding: "7px 10px", borderRadius: 8, cursor: "pointer",
-            background: "var(--accent-purple-bg)",
-            border: "1px solid var(--accent-purple-border)",
-            color: "var(--accent-purple)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            transition: "all 0.2s",
-          }}>
+          {isCompany && <Link href="/dashboard" style={linkStyle(pathname === "/dashboard")}>My Company</Link>}
+          {isAdmin && <Link href="/admin" style={linkStyle(pathname === "/admin")}>Admin Panel</Link>}
+          <button onClick={toggleTheme} className="theme-btn" title={isDark ? "Light mode" : "Dark mode"}>
             {isDark ? <Sun size={14} /> : <Moon size={14} />}
           </button>
-
           {user && (
-            <button onClick={handleLogout} style={{
-              padding: "7px 16px", borderRadius: 8, fontSize: 13, fontWeight: 500,
-              border: "1px solid rgba(239,68,68,0.25)", background: "rgba(239,68,68,0.08)",
-              color: "#f87171", cursor: "pointer", transition: "all 0.2s",
-            }}>
-              Sign Out
-            </button>
+            <button onClick={handleLogout} className="signout-btn">Sign Out</button>
           )}
         </div>
+
+        {/* Mobile right side */}
+        <div className="nav-mobile-right">
+          <button onClick={toggleTheme} className="theme-btn" title={isDark ? "Light mode" : "Dark mode"}>
+            {isDark ? <Sun size={14} /> : <Moon size={14} />}
+          </button>
+          <button onClick={() => setMenuOpen((v) => !v)} className="hamburger-btn" aria-label="Toggle menu">
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile dropdown */}
+      {menuOpen && (
+        <div className="mobile-menu">
+          <Link href="/" style={linkStyle(pathname === "/")} onClick={close}>Companies</Link>
+          <Link href="/positions" style={linkStyle(pathname === "/positions")} onClick={close}>Jobs & Collabs</Link>
+          {!loading && !user && (
+            <>
+              <Link href="/register" style={linkStyle(pathname === "/register")} onClick={close}>List Your Company</Link>
+              <Link href="/login" style={linkStyle(pathname === "/login")} onClick={close}>Sign In</Link>
+            </>
+          )}
+          {isCompany && <Link href="/dashboard" style={linkStyle(pathname === "/dashboard")} onClick={close}>My Company</Link>}
+          {isAdmin && <Link href="/admin" style={linkStyle(pathname === "/admin")} onClick={close}>Admin Panel</Link>}
+          {user && (
+            <button onClick={handleLogout} className="signout-btn" style={{ width: "100%", textAlign: "left" }}>Sign Out</button>
+          )}
+        </div>
+      )}
     </nav>
   );
 }

@@ -163,7 +163,7 @@ export default function PositionsPage() {
                         {pos.techStack.map((t) => <span key={t} style={{ fontSize: 11, padding: "2px 8px", borderRadius: 5, background: "rgba(0,209,255,0.07)", border: "1px solid rgba(0,209,255,0.15)", color: "var(--accent-cyan)" }}>{t}</span>)}
                       </div>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end", flexShrink: 0 }}>
+                    <div className="pos-actions" style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end", flexShrink: 0 }}>
                       {pos.company && (
                         <Link href={`/company/${pos.company.slug}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 10, background: "var(--bg-card)", border: "1px solid var(--bg-card-border)", textDecoration: "none" }}>
                           <div style={{ width: 28, height: 28, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#7042f8,#00d1ff)" }}>
