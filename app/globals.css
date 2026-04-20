@@ -344,15 +344,59 @@ main {
 }
 
 /* ── Responsive breakpoints ── */
+
+/* Company detail page */
+.company-hero-card { padding: 32px 36px; }
+.team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+
+/* Registration form */
+.stepper-row { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+.stepper-pill { padding: 7px 14px; }
+.form-panel { border-radius: 14px; padding: 28px; background: var(--bg-card); border: 1px solid var(--bg-card-border); }
+
+/* Tech stack / industry tag buttons */
+.tag-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+
+/* Skeleton rows */
+.skeleton-pos-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.skeleton-pos-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; }
+.skeleton-admin-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.company-hero-header { flex-wrap: wrap; }
+
 @media (max-width: 768px) {
   .nav-links { display: none; }
   .nav-mobile-right { display: flex; }
-
   .admin-stats-grid { grid-template-columns: repeat(3, 1fr); }
+  .stepper-pill { padding: 6px 10px; font-size: 12px; }
 }
 
 @media (max-width: 640px) {
   .navbar-inner { padding: 12px 16px; }
+
+  /* Company hero card */
+  .company-hero-card { padding: 20px 16px !important; }
+  .company-hero-header { flex-direction: column; gap: 16px; }
+  .team-grid { grid-template-columns: 1fr; }
+
+  /* Stepper */
+  .stepper-row { gap: 4px; }
+  .stepper-pill { padding: 5px 8px; font-size: 11px; }
+
+  /* Form panel */
+  .form-panel { padding: 16px; }
+
+  /* Tag buttons */
+  .tag-btn { padding: 5px 10px; font-size: 11px; }
+  .tag-grid { gap: 6px; }
 
   /* Admin stats: stack to 1 col */
   .admin-stats-grid { grid-template-columns: 1fr !important; }
@@ -362,4 +406,9 @@ main {
 
   /* Positions: actions go full width below */
   .pos-actions { flex-direction: row !important; flex-wrap: wrap; align-items: center !important; width: 100%; }
+
+  /* Skeleton rows stack on mobile */
+  .skeleton-pos-row { flex-direction: column; gap: 12px; }
+  .skeleton-pos-actions { flex-direction: row; align-items: center; flex-shrink: unset; width: 100%; }
+  .skeleton-admin-row { flex-direction: column; gap: 12px; }
 }

@@ -216,7 +216,7 @@ export default function RegistrationForm() {
   return (
     <div style={{ width: "100%" }}>
       {/* Step indicators */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 28, flexWrap: "wrap" }}>
+      <div className="stepper-row">
         {STEPS.map((s, i) => {
           const Icon = s.icon;
           const isDone = i < step;
@@ -224,9 +224,9 @@ export default function RegistrationForm() {
           return (
             <div key={s.label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <div
-                className={isCurrent ? "btn-gradient" : ""}
+                className={isCurrent ? "btn-gradient stepper-pill" : "stepper-pill"}
                 style={{
-                  display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 20,
+                  display: "flex", alignItems: "center", gap: 6, borderRadius: 20,
                   fontSize: 13, fontWeight: 500, whiteSpace: "nowrap",
                   background: isCurrent ? "linear-gradient(135deg, #7042f8, #00d1ff)" : isDone ? "var(--accent-purple-bg)" : "var(--bg-input)",
                   border: isDone || isCurrent ? "1px solid var(--accent-purple-border)" : "1px solid var(--bg-input-border)",
@@ -246,14 +246,7 @@ export default function RegistrationForm() {
       </div>
 
       {/* Form panel */}
-      <div
-        style={{
-          borderRadius: 14,
-          padding: "28px",
-          background: "var(--bg-card)",
-          border: "1px solid var(--bg-card-border)",
-        }}
-      >
+      <div className="form-panel">
         <AnimatePresence mode="wait">
           {/* Step 0: Company Info */}
           {step === 0 && (
@@ -304,22 +297,16 @@ export default function RegistrationForm() {
               </div>
               <div>
                 <label style={{ ...labelStyle, color: isFieldError("industry", form.industry) ? "#f87171" : labelStyle.color }}>Industry * {isFieldError("industry", form.industry) && "- select one"}</label>
-                <div className="flex flex-wrap gap-2">
+                <div className="tag-grid">
                   {INDUSTRIES.map((ind) => (
                     <button
                       key={ind}
                       type="button"
                       onClick={() => setForm({ ...form, industry: ind })}
-                      className={`px-3 py-1.5 rounded-lg text-sm transition-all duration-200${form.industry === ind ? " btn-gradient" : ""}`}
+                      className={`tag-btn${form.industry === ind ? " btn-gradient" : ""}`}
                       style={{
-                        background:
-                          form.industry === ind
-                            ? "linear-gradient(135deg, #7042f8, #00d1ff)"
-                            : "var(--bg-input)",
-                        border:
-                          form.industry === ind
-                            ? "1px solid transparent"
-                            : "1px solid var(--bg-input-border)",
+                        background: form.industry === ind ? "linear-gradient(135deg, #7042f8, #00d1ff)" : "var(--bg-input)",
+                        border: form.industry === ind ? "1px solid transparent" : "1px solid var(--bg-input-border)",
                         color: form.industry === ind ? "#fff" : "var(--text-secondary)",
                       }}
                     >
@@ -330,27 +317,17 @@ export default function RegistrationForm() {
               </div>
               <div>
                 <label id="field-techStack" style={{ ...labelStyle, color: isFieldError("techStack", form.techStack) ? "#f87171" : labelStyle.color }}>Tech Stack * {isFieldError("techStack", form.techStack) && "- select at least one"}</label>
-                <div className="flex flex-wrap gap-2">
+                <div className="tag-grid">
                   {TECH_OPTIONS.map((tech) => (
                     <button
                       key={tech}
                       type="button"
-                      onClick={() =>
-                        toggleTech(tech, form.techStack, (v) =>
-                          setForm({ ...form, techStack: v })
-                        )
-                      }
-                      className="px-3 py-1.5 rounded-lg text-xs transition-all duration-200"
+                      onClick={() => toggleTech(tech, form.techStack, (v) => setForm({ ...form, techStack: v }))}
+                      className="tag-btn"
                       style={{
-                        background: form.techStack.includes(tech)
-                          ? "rgba(0,209,255,0.15)"
-                          : "var(--bg-input)",
-                        border: form.techStack.includes(tech)
-                          ? "1px solid rgba(0,209,255,0.4)"
-                          : "1px solid var(--bg-input-border)",
-                        color: form.techStack.includes(tech)
-                          ? "var(--accent-cyan)"
-                          : "var(--text-secondary)",
+                        background: form.techStack.includes(tech) ? "rgba(0,209,255,0.15)" : "var(--bg-input)",
+                        border: form.techStack.includes(tech) ? "1px solid rgba(0,209,255,0.4)" : "1px solid var(--bg-input-border)",
+                        color: form.techStack.includes(tech) ? "var(--accent-cyan)" : "var(--text-secondary)",
                       }}
                     >
                       {tech}
@@ -500,27 +477,17 @@ export default function RegistrationForm() {
                   />
                   <div>
                     <p style={{ ...labelStyle }}>Tech Stack</p>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="tag-grid">
                       {TECH_OPTIONS.slice(0, 16).map((tech) => (
                         <button
                           key={tech}
                           type="button"
-                          onClick={() =>
-                            toggleTech(tech, project.techStack, (v) =>
-                              updateProject(i, "techStack", v)
-                            )
-                          }
-                          className="px-2 py-1 rounded-md text-xs transition-all"
+                          onClick={() => toggleTech(tech, project.techStack, (v) => updateProject(i, "techStack", v))}
+                          className="tag-btn"
                           style={{
-                            background: project.techStack.includes(tech)
-                              ? "rgba(0,209,255,0.15)"
-                              : "var(--bg-input)",
-                            border: project.techStack.includes(tech)
-                              ? "1px solid rgba(0,209,255,0.35)"
-                              : "1px solid var(--bg-card-border)",
-                            color: project.techStack.includes(tech)
-                              ? "var(--accent-cyan)"
-                              : "var(--text-secondary)",
+                            background: project.techStack.includes(tech) ? "rgba(0,209,255,0.15)" : "var(--bg-input)",
+                            border: project.techStack.includes(tech) ? "1px solid rgba(0,209,255,0.35)" : "1px solid var(--bg-card-border)",
+                            color: project.techStack.includes(tech) ? "var(--accent-cyan)" : "var(--text-secondary)",
                           }}
                         >
                           {tech}

@@ -55,7 +55,7 @@ export function SkeletonCard() {
 export function SkeletonPositionRow() {
   return (
     <div style={{ borderRadius: 14, padding: "20px 22px", background: "var(--bg-card)", border: "1px solid var(--bg-card-border)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
+      <div className="skeleton-pos-row">
         {/* Left: title + badge + desc + tags */}
         <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -71,7 +71,7 @@ export function SkeletonPositionRow() {
           </div>
         </div>
         {/* Right: company card + button */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end", flexShrink: 0 }}>
+        <div className="skeleton-pos-actions">
           <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 10, background: "var(--bg-card)", border: "1px solid var(--bg-card-border)" }}>
             <Skeleton width={28} height={28} borderRadius={7} />
             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
@@ -100,7 +100,7 @@ export function SkeletonList({ count = 3 }: { count?: number }) {
 export function SkeletonAdminCard() {
   return (
     <div style={{ borderRadius: 14, padding: 22, background: "var(--bg-card)", border: "1px solid var(--bg-card-border)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
+      <div className="skeleton-admin-row">
         {/* Left */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: 14, flex: 1, minWidth: 0 }}>
           {/* Logo */}
@@ -125,7 +125,7 @@ export function SkeletonAdminCard() {
           </div>
         </div>
         {/* Right: action buttons */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
+        <div className="admin-actions">
           <Skeleton width={90} height={32} borderRadius={8} />
           <Skeleton width={90} height={32} borderRadius={8} />
           <Skeleton width={90} height={32} borderRadius={8} />

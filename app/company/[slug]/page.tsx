@@ -33,8 +33,8 @@ export default function CompanyProfilePage() {
     <div style={{ minHeight: "100vh", padding: "100px 24px 60px" }}>
       <div style={{ maxWidth: 900, margin: "0 auto" }}>
         <Skeleton width={120} height={16} borderRadius={6} style={{ marginBottom: 28 }} />
-        <div className="card" style={{ padding: "32px 36px", marginBottom: 24 }}>
-          <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
+        <div className="card company-hero-card" style={{ marginBottom: 24 }}>
+          <div className="company-hero-header" style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
             <Skeleton width={72} height={72} borderRadius={16} />
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
               <Skeleton width="50%" height={28} borderRadius={8} />
@@ -42,13 +42,13 @@ export default function CompanyProfilePage() {
               <Skeleton width="75%" height={14} />
             </div>
           </div>
-          <div style={{ marginTop: 24, display: "flex", gap: 8 }}>
+          <div style={{ marginTop: 24, display: "flex", flexWrap: "wrap", gap: 8 }}>
             {[80,60,70,90,65].map((w,i) => <Skeleton key={i} width={w} height={26} borderRadius={6} />)}
           </div>
         </div>
         <div style={{ marginBottom: 24 }}>
           <Skeleton width={80} height={20} borderRadius={6} style={{ marginBottom: 16 }} />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
+          <div className="team-grid">
             {[1,2,3].map(i => (
               <div key={i} className="card" style={{ padding: 20, display: "flex", alignItems: "center", gap: 14 }}>
                 <Skeleton width={44} height={44} borderRadius={22} />
@@ -78,8 +78,8 @@ export default function CompanyProfilePage() {
         </Link>
 
         {/* Hero card */}
-        <div className="card" style={{ padding: "32px 36px", marginBottom: 24 }}>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 24, flexWrap: "wrap" }}>
+        <div className="card company-hero-card" style={{ marginBottom: 24 }}>
+          <div className="company-hero-header" style={{ display: "flex", alignItems: "flex-start", gap: 24 }}>
             {company!.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={company!.logo} alt={company!.name} style={{ width: 72, height: 72, borderRadius: 16, objectFit: "cover", flexShrink: 0 }} />
@@ -111,7 +111,7 @@ export default function CompanyProfilePage() {
             </div>
           </div>
 
-          <div style={{ ...divider, display: "flex", gap: 32 }}>
+          <div style={{ ...divider, display: "flex", gap: 32, flexWrap: "wrap" }}>
             {[{ v: company!.teamMembers.length, l: "Team Members" }, { v: company!.projects.length, l: "Projects" }, { v: company!.techStack.length, l: "Technologies" }].map(({ v, l }) => (
               <div key={l}>
                 <div style={{ fontSize: 22, fontWeight: 700, color: "var(--text-primary)" }}>{v}</div>
@@ -127,7 +127,7 @@ export default function CompanyProfilePage() {
           {company!.teamMembers.length === 0 ? (
             <p style={{ color: "var(--text-muted)", fontSize: 13 }}>No team members listed.</p>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
+            <div className="team-grid">
               {company!.teamMembers.map((member) => {
                 const [c1, c2] = avatarColor(member.name);
                 return (
