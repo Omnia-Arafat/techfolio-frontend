@@ -19,13 +19,18 @@ export default function AdminPage() {
   const { token } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const loadCompanies = useCallback(() => {
     if (!token) return;
     setLoadingData(true);
-    getAllCompanies(token).then(setCompanies).catch(() => {}).finally(() => setLoadingData(false));
+    setFetchError(null);
+    getAllCompanies(token)
+      .then(setCompanies)
+      .catch((err) => setFetchError(err instanceof Error ? err.message : "Failed to load companies"))
+      .finally(() => setLoadingData(false));
   }, [token]);
 
   useEffect(() => { loadCompanies(); }, [loadCompanies]);
@@ -101,6 +106,11 @@ export default function AdminPage() {
         {loadingData ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }} className="stagger">
             {[1,2,3,4].map(i => <SkeletonAdminCard key={i} />)}
+          </div>
+        ) : fetchError ? (
+          <div style={{ ...card, padding: "40px 20px", textAlign: "center" }}>
+            <p style={{ color: "#f87171", fontSize: 14, margin: 0 }}>Error: {fetchError}</p>
+            <button onClick={loadCompanies} style={{ marginTop: 12, padding: "7px 16px", borderRadius: 8, fontSize: 13, cursor: "pointer", background: "var(--bg-input)", border: "1px solid var(--bg-input-border)", color: "var(--text-secondary)" }}>Retry</button>
           </div>
         ) : companies.length === 0 ? (
           <div style={{ ...card, padding: "60px 20px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
