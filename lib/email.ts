@@ -1,7 +1,12 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.FROM_EMAIL || "onboarding@resend.dev";
+
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  if (!apiKey) throw new Error("Missing RESEND_API_KEY");
+  return new Resend(apiKey);
+}
 
 interface ApplicationEmailData {
   to: string;
@@ -20,6 +25,7 @@ function buildHeader() {
 }
 
 export async function sendApplicationAccepted(data: ApplicationEmailData) {
+  const resend = getResendClient();
   const requestType = data.isCollaboration ? "collaboration request" : "application";
   const subject = `You accepted a ${requestType} - ${data.applicantName}`;
 
@@ -43,6 +49,7 @@ export async function sendApplicationAccepted(data: ApplicationEmailData) {
 }
 
 export async function sendApplicationRejected(data: ApplicationEmailData) {
+  const resend = getResendClient();
   const requestType = data.isCollaboration ? "collaboration request" : "application";
   const subject = `You declined a ${requestType} - ${data.applicantName}`;
 
