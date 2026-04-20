@@ -3,7 +3,10 @@ import { supabase } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
-  const { error } = await supabase.auth.resetPasswordForEmail(email);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/update-password`,
+  });
   if (error) return Response.json({ message: error.message }, { status: 400 });
   return Response.json({ success: true, message: "Reset link sent if the email exists." });
 }
