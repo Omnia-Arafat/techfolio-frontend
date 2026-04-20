@@ -24,6 +24,17 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const dto = await req.json();
 
+  // Block duplicate email registrations
+  const { data: existingUser } = await supabase
+    .from("users")
+    .select("id")
+    .eq("email", dto.email)
+    .single();
+
+  if (existingUser) {
+    return Response.json({ message: "An account with this email already exists." }, { status: 409 });
+  }
+
   // Generate unique slug
   let slug = slugify(dto.name);
   let counter = 1;
