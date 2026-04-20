@@ -141,7 +141,7 @@ export default function AdminPage() {
                         </div>
                         {/* Meta */}
                         <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 8 }}>
-                          {company.teamMembers.length} member{company.teamMembers.length !== 1 ? "s" : ""} · {company.projects.length} project{company.projects.length !== 1 ? "s" : ""} · {new Date(company.createdAt).toLocaleDateString()}
+                          {company.teamMembers.length} member{company.teamMembers.length !== 1 ? "s" : ""} | {company.projects.length} project{company.projects.length !== 1 ? "s" : ""} | {new Date(company.createdAt).toLocaleDateString()}
                         </div>
                       </div>
                     </div>

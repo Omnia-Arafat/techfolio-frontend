@@ -76,10 +76,10 @@ export default function DashboardPage() {
   const [addingPosition, setAddingPosition] = useState(false);
   const [newPosition, setNewPosition] = useState({ title: "", description: "", type: "HIRING", techStack: [] as string[] });
 
-  // Applications — received (on my positions) grouped by position
+  // Applications - received (on my positions) grouped by position
   const [receivedApps, setReceivedApps] = useState<Record<string, Application[]>>({});
   const [expandedPos, setExpandedPos] = useState<string | null>(null);
-  // Applications — sent by my company
+  // Applications - sent by my company
   const [sentApps, setSentApps] = useState<Application[]>([]);
   const [appsSubTab, setAppsSubTab] = useState<"received" | "sent">("received");
 
@@ -506,7 +506,7 @@ export default function DashboardPage() {
               ))}
             </div>
 
-            {/* RECEIVED — grouped by position */}
+            {/* RECEIVED - grouped by position */}
             {appsSubTab === "received" && (
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {positions.length === 0 && <p style={{ color: "var(--text-muted)", fontSize: 13 }}>No positions posted yet.</p>}

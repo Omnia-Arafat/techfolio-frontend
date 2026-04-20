@@ -43,7 +43,7 @@ export default function LoginPage() {
           </div>
           <div>
             <label className="label">Password</label>
-            <input className="input-field" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
+            <input className="input-field" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" required />
           </div>
 
           {error && <p style={{ fontSize: 13, color: "#f87171", textAlign: "center", margin: 0 }}>{error}</p>}

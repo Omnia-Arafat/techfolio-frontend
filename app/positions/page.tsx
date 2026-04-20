@@ -236,8 +236,8 @@ export default function PositionsPage() {
                   <div style={{ padding: "12px 16px", borderRadius: 10, background: "rgba(112,66,248,0.08)", border: "1px solid rgba(112,66,248,0.2)" }}>
                     <p style={{ margin: 0, fontSize: 12, color: "var(--accent-purple)" }}>
                       {applyTarget.type === "COLLABORATION"
-                        ? "Sending as your company — the other company will see your profile."
-                        : "Applying as your company — your company profile will be shared."}
+                        ? "Sending as your company - the other company will see your profile."
+                        : "Applying as your company - your company profile will be shared."}
                     </p>
                   </div>
                 )}

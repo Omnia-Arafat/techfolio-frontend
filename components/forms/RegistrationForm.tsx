@@ -205,10 +205,10 @@ export default function RegistrationForm() {
               <p style={{ margin: "2px 0 0", fontSize: 14, color: "var(--accent-cyan)", fontFamily: "monospace", letterSpacing: "0.05em" }}>{credentials.generatedPassword}</p>
             </div>
           </div>
-          <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 12, marginBottom: 0 }}>Save these credentials — the password won&apos;t be shown again.</p>
+          <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 12, marginBottom: 0 }}>Save these credentials - the password won&apos;t be shown again.</p>
         </div>
 
-        <a href="/reset-password" style={{ fontSize: 13, color: "var(--accent-purple)", textDecoration: "none" }}>Change your password →</a>
+        <a href="/reset-password" style={{ fontSize: 13, color: "var(--accent-purple)", textDecoration: "none" }}>Change your password</a>
       </div>
     );
   }
@@ -302,7 +302,7 @@ export default function RegistrationForm() {
                 {isFieldError("bio", form.bio) && <span style={{ fontSize: 11, color: "#f87171", marginTop: 4, display: "block" }}>Bio is required</span>}
               </div>
               <div>
-                <label style={{ ...labelStyle, color: isFieldError("industry", form.industry) ? "#f87171" : labelStyle.color }}>Industry * {isFieldError("industry", form.industry) && "— select one"}</label>
+                <label style={{ ...labelStyle, color: isFieldError("industry", form.industry) ? "#f87171" : labelStyle.color }}>Industry * {isFieldError("industry", form.industry) && "- select one"}</label>
                 <div className="flex flex-wrap gap-2">
                   {INDUSTRIES.map((ind) => (
                     <button
@@ -328,7 +328,7 @@ export default function RegistrationForm() {
                 </div>
               </div>
               <div>
-                <label id="field-techStack" style={{ ...labelStyle, color: isFieldError("techStack", form.techStack) ? "#f87171" : labelStyle.color }}>Tech Stack * {isFieldError("techStack", form.techStack) && "— select at least one"}</label>
+                <label id="field-techStack" style={{ ...labelStyle, color: isFieldError("techStack", form.techStack) ? "#f87171" : labelStyle.color }}>Tech Stack * {isFieldError("techStack", form.techStack) && "- select at least one"}</label>
                 <div className="flex flex-wrap gap-2">
                   {TECH_OPTIONS.map((tech) => (
                     <button

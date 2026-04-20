@@ -14,7 +14,7 @@ export function Skeleton({ width = "100%", height = 16, borderRadius = 8, classN
   );
 }
 
-// ── Mirrors CompanyCard exactly ──
+// -- Mirrors CompanyCard exactly --
 export function SkeletonCard() {
   return (
     <div style={{ borderRadius: 14, padding: 22, background: "var(--bg-card)", border: "1px solid var(--bg-card-border)", display: "flex", flexDirection: "column", gap: 14, height: "100%" }}>
@@ -34,7 +34,7 @@ export function SkeletonCard() {
         <Skeleton width={16} height={16} borderRadius={4} style={{ opacity: 0.3 }} />
       </div>
 
-      {/* Bio — 2 lines */}
+      {/* Bio - 2 lines */}
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <Skeleton width="100%" height={13} borderRadius={4} />
         <Skeleton width="75%" height={13} borderRadius={4} />
@@ -51,7 +51,7 @@ export function SkeletonCard() {
   );
 }
 
-// ── Mirrors position/job list row exactly ──
+// -- Mirrors position/job list row exactly --
 export function SkeletonPositionRow() {
   return (
     <div style={{ borderRadius: 14, padding: "20px 22px", background: "var(--bg-card)", border: "1px solid var(--bg-card-border)" }}>
@@ -96,7 +96,7 @@ export function SkeletonList({ count = 3 }: { count?: number }) {
   );
 }
 
-// ── Mirrors admin company row exactly ──
+// -- Mirrors admin company row exactly --
 export function SkeletonAdminCard() {
   return (
     <div style={{ borderRadius: 14, padding: 22, background: "var(--bg-card)", border: "1px solid var(--bg-card-border)" }}>
@@ -135,7 +135,7 @@ export function SkeletonAdminCard() {
   );
 }
 
-// ── Mirrors dashboard list row (team/project/position) ──
+// -- Mirrors dashboard list row (team/project/position) --
 export function SkeletonDashboardRow() {
   return (
     <div style={{ borderRadius: 14, padding: "16px 20px", background: "var(--bg-card)", border: "1px solid var(--bg-card-border)", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
