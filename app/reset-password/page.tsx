@@ -34,7 +34,7 @@ export default function ResetPasswordPage() {
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <input className="input-field" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" required />
             {error && <p style={{ fontSize: 13, color: "#f87171", textAlign: "center", margin: 0 }}>{error}</p>}
-            <button type="submit" style={{ padding: "11px 20px", borderRadius: 10, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", color: "var(--text-primary)", background: "linear-gradient(135deg, #7042f8, #00d1ff)" }}>
+            <button type="submit" className="btn-gradient" style={{ padding: "11px 20px", borderRadius: 10, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", color: "#fff", background: "linear-gradient(135deg, #7042f8, #00d1ff)" }}>
               Send Reset Link
             </button>
           </form>

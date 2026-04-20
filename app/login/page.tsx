@@ -55,7 +55,7 @@ export default function LoginPage() {
 
           {error && <p style={{ fontSize: 13, color: "#f87171", textAlign: "center", margin: 0 }}>{error}</p>}
 
-          <button type="submit" disabled={loading} style={{ padding: "11px 20px", borderRadius: 10, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", color: "var(--text-primary)", background: "linear-gradient(135deg, #7042f8, #00d1ff)", opacity: loading ? 0.6 : 1 }}>
+          <button type="submit" disabled={loading} className="btn-gradient" style={{ padding: "11px 20px", borderRadius: 10, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", color: "#fff", background: "linear-gradient(135deg, #7042f8, #00d1ff)", opacity: loading ? 0.6 : 1 }}>
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>

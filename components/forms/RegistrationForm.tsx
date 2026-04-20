@@ -224,6 +224,7 @@ export default function RegistrationForm() {
           return (
             <div key={s.label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <div
+                className={isCurrent ? "btn-gradient" : ""}
                 style={{
                   display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 20,
                   fontSize: 13, fontWeight: 500, whiteSpace: "nowrap",
@@ -309,7 +310,7 @@ export default function RegistrationForm() {
                       key={ind}
                       type="button"
                       onClick={() => setForm({ ...form, industry: ind })}
-                      className="px-3 py-1.5 rounded-lg text-sm transition-all duration-200"
+                      className={`px-3 py-1.5 rounded-lg text-sm transition-all duration-200${form.industry === ind ? " btn-gradient" : ""}`}
                       style={{
                         background:
                           form.industry === ind
@@ -585,10 +586,11 @@ export default function RegistrationForm() {
             <button
               type="button"
               onClick={goNext}
+              className="btn-gradient"
               style={{
                 display: "flex", alignItems: "center", gap: 6, padding: "8px 20px", borderRadius: 8,
                 fontSize: 13, fontWeight: 600, cursor: "pointer", border: "none",
-                background: "linear-gradient(135deg, #7042f8, #00d1ff)", color: "var(--text-primary)",
+                background: "linear-gradient(135deg, #7042f8, #00d1ff)", color: "#fff",
               }}
             >
               Next <ArrowRight size={14} />
@@ -598,10 +600,11 @@ export default function RegistrationForm() {
               type="button"
               onClick={handleSubmit}
               disabled={loading}
+              className="btn-gradient"
               style={{
                 display: "flex", alignItems: "center", gap: 6, padding: "8px 20px", borderRadius: 8,
                 fontSize: 13, fontWeight: 600, cursor: "pointer", border: "none",
-                background: "linear-gradient(135deg, #7042f8, #00d1ff)", color: "var(--text-primary)",
+                background: "linear-gradient(135deg, #7042f8, #00d1ff)", color: "#fff",
                 opacity: loading ? 0.6 : 1, transition: "opacity 0.15s",
               }}
             >

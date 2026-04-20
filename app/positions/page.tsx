@@ -167,7 +167,7 @@ export default function PositionsPage() {
                       {pos.company && (
                         <Link href={`/company/${pos.company.slug}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 10, background: "var(--bg-card)", border: "1px solid var(--bg-card-border)", textDecoration: "none" }}>
                           <div style={{ width: 28, height: 28, borderRadius: 7, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#7042f8,#00d1ff)" }}>
-                            <Building2 size={13} color="var(--text-primary)" />
+                            <Building2 size={13} color="#fff" />
                           </div>
                           <div>
                             <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: "var(--text-primary)" }}>{pos.company.name}</p>
@@ -176,11 +176,11 @@ export default function PositionsPage() {
                         </Link>
                       )}
                       {!mine && (
-                        <button onClick={() => openApply(pos)} style={{
+                        <button onClick={() => openApply(pos)} className="btn-gradient" style={{
                           display: "flex", alignItems: "center", gap: 6, padding: "8px 18px", borderRadius: 8,
                           fontSize: 13, fontWeight: 600, cursor: "pointer", border: "none",
                           background: pos.type === "COLLABORATION" ? "linear-gradient(135deg,#7042f8,#a78bfa)" : "linear-gradient(135deg,#7042f8,#00d1ff)",
-                          color: "var(--text-primary)",
+                          color: "#fff",
                         }}>
                           {pos.type === "COLLABORATION" ? <><Handshake size={13} /> Connect</> : <><Send size={13} /> Apply</>}
                         </button>

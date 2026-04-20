@@ -1,26 +1,26 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabaseBrowser } from "@/lib/supabase-browser";
 
-// Supabase redirects here after clicking the password reset email link.
-// The token arrives in the URL hash (#access_token=...&type=recovery).
-// The browser-side Supabase client picks it up automatically via onAuthStateChange.
 export default function AuthCallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        router.replace("/update-password");
-      } else if (event === "SIGNED_IN") {
-        // Any other sign-in flow — go to dashboard
-        router.replace("/dashboard");
-      }
-    });
+    // Dynamically import to avoid SSR — env vars only available client-side
+    import("@/lib/supabase-browser").then(({ supabaseBrowser }) => {
+      const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((event) => {
+        if (event === "PASSWORD_RECOVERY") {
+          router.replace("/update-password");
+        } else if (event === "SIGNED_IN") {
+          router.replace("/dashboard");
+        }
+      });
 
-    return () => subscription.unsubscribe();
+      return () => subscription.unsubscribe();
+    });
   }, [router]);
 
   return (

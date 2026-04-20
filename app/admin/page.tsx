@@ -118,7 +118,7 @@ export default function AdminPage() {
                     {/* Left: info */}
                     <div style={{ display: "flex", alignItems: "flex-start", gap: 14, flex: 1, minWidth: 0 }}>
                       <div style={{ width: 42, height: 42, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, background: "linear-gradient(135deg, #7042f8, #00d1ff)" }}>
-                        <Building2 size={18} color="var(--text-primary)" />
+                        <Building2 size={18} color="#fff" />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         {/* Name + status */}

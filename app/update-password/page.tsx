@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+export const dynamic = "force-dynamic";
+
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
-import { supabaseBrowser } from "@/lib/supabase-browser";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export default function UpdatePasswordPage() {
   const router = useRouter();
+  const clientRef = useRef<SupabaseClient | null>(null);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
@@ -16,14 +19,13 @@ export default function UpdatePasswordPage() {
   const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
-    // Supabase puts the recovery token in the URL hash as access_token
-    // The client SDK picks it up automatically on auth state change
-    const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setReady(true);
-      }
+    import("@/lib/supabase-browser").then(({ supabaseBrowser }) => {
+      clientRef.current = supabaseBrowser;
+      const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange((event) => {
+        if (event === "PASSWORD_RECOVERY") setReady(true);
+      });
+      return () => subscription.unsubscribe();
     });
-    return () => subscription.unsubscribe();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,9 +33,10 @@ export default function UpdatePasswordPage() {
     setError("");
     if (password !== confirm) return setError("Passwords do not match");
     if (password.length < 6) return setError("Password must be at least 6 characters");
+    if (!clientRef.current) return setError("Client not ready, please try again.");
 
     setLoading(true);
-    const { error } = await supabaseBrowser.auth.updateUser({ password });
+    const { error } = await clientRef.current.auth.updateUser({ password });
     setLoading(false);
 
     if (error) return setError(error.message);
@@ -58,39 +61,19 @@ export default function UpdatePasswordPage() {
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ position: "relative" }}>
-            <input
-              className="input-field"
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="New password"
-              required
-              style={{ paddingRight: 40 }}
-            />
+            <input className="input-field" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="New password" required style={{ paddingRight: 40 }} />
             <button type="button" onClick={() => setShowPassword((v) => !v)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", display: "flex", alignItems: "center" }}>
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           <div style={{ position: "relative" }}>
-            <input
-              className="input-field"
-              type={showConfirm ? "text" : "password"}
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              placeholder="Confirm new password"
-              required
-              style={{ paddingRight: 40 }}
-            />
+            <input className="input-field" type={showConfirm ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Confirm new password" required style={{ paddingRight: 40 }} />
             <button type="button" onClick={() => setShowConfirm((v) => !v)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", display: "flex", alignItems: "center" }}>
               {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {error && <p style={{ fontSize: 13, color: "#f87171", textAlign: "center", margin: 0 }}>{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            style={{ padding: "11px 20px", borderRadius: 10, fontSize: 14, fontWeight: 600, border: "none", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, color: "var(--text-primary)", background: "linear-gradient(135deg, #7042f8, #00d1ff)" }}
-          >
+          <button type="submit" disabled={loading} className="btn-gradient" style={{ padding: "11px 20px", borderRadius: 10, fontSize: 14, fontWeight: 600, border: "none", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1, color: "#fff", background: "linear-gradient(135deg, #7042f8, #00d1ff)" }}>
             {loading ? "Updating..." : "Update Password"}
           </button>
         </form>

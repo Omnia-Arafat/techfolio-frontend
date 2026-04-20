@@ -281,7 +281,7 @@ export default function DashboardPage() {
                     <label style={lbl}>Industry</label>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {INDUSTRIES.map((ind) => (
-                        <button key={ind} type="button" onClick={() => setEditForm({ ...editForm, industry: ind })} style={{ padding: "5px 12px", borderRadius: 8, fontSize: 12, cursor: "pointer", background: editForm.industry === ind ? "linear-gradient(135deg,#7042f8,#00d1ff)" : "var(--bg-input)", border: editForm.industry === ind ? "1px solid transparent" : "1px solid var(--bg-input-border)", color: editForm.industry === ind ? "var(--text-primary)" : "var(--text-secondary)" }}>{ind}</button>
+                        <button key={ind} type="button" onClick={() => setEditForm({ ...editForm, industry: ind })} className={editForm.industry === ind ? "btn-gradient" : ""} style={{ padding: "5px 12px", borderRadius: 8, fontSize: 12, cursor: "pointer", background: editForm.industry === ind ? "linear-gradient(135deg,#7042f8,#00d1ff)" : "var(--bg-input)", border: editForm.industry === ind ? "1px solid transparent" : "1px solid var(--bg-input-border)", color: editForm.industry === ind ? "#fff" : "var(--text-secondary)" }}>{ind}</button>
                       ))}
                     </div>
                   </div>
@@ -465,7 +465,7 @@ export default function DashboardPage() {
                 <textarea rows={2} style={{ ...inp, resize: "vertical" }} placeholder="Description *" value={newPosition.description} onChange={(e) => setNewPosition({ ...newPosition, description: e.target.value })} />
                 <div style={{ display: "flex", gap: 8 }}>
                   {["HIRING", "COLLABORATION"].map((t) => (
-                    <button key={t} type="button" onClick={() => setNewPosition({ ...newPosition, type: t })} style={{ padding: "6px 14px", borderRadius: 8, fontSize: 12, cursor: "pointer", background: newPosition.type === t ? "linear-gradient(135deg,#7042f8,#00d1ff)" : "var(--bg-input)", border: newPosition.type === t ? "1px solid transparent" : "1px solid var(--bg-input-border)", color: newPosition.type === t ? "var(--text-primary)" : "var(--text-secondary)" }}>{t}</button>
+                    <button key={t} type="button" onClick={() => setNewPosition({ ...newPosition, type: t })} className={newPosition.type === t ? "btn-gradient" : ""} style={{ padding: "6px 14px", borderRadius: 8, fontSize: 12, cursor: "pointer", background: newPosition.type === t ? "linear-gradient(135deg,#7042f8,#00d1ff)" : "var(--bg-input)", border: newPosition.type === t ? "1px solid transparent" : "1px solid var(--bg-input-border)", color: newPosition.type === t ? "#fff" : "var(--text-secondary)" }}>{t}</button>
                   ))}
                 </div>
                 <div>

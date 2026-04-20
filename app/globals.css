@@ -144,6 +144,22 @@ body {
   color: var(--text-primary) !important;
 }
 
+/* Force white text on gradient backgrounds — must come AFTER any color overrides */
+[data-theme="light"] [style*="linear-gradient(135deg, #7042f8"],
+[data-theme="light"] [style*="linear-gradient(135deg,#7042f8"],
+[data-theme="light"] [style*="linear-gradient(135deg, var(--accent-purple)"],
+[data-theme="light"] [style*="linear-gradient(135deg,var(--accent-purple)"],
+[data-theme="light"] .btn-gradient {
+  color: #ffffff !important;
+}
+
+/* Children of gradient containers also get white */
+[data-theme="light"] [style*="linear-gradient(135deg, #7042f8"] *,
+[data-theme="light"] [style*="linear-gradient(135deg,#7042f8"] *,
+[data-theme="light"] .btn-gradient * {
+  color: #ffffff !important;
+}
+
 [data-theme="light"] p {
   color: var(--text-secondary);
 }
@@ -200,13 +216,6 @@ body {
 [data-theme="light"] [style*="rgba(226,232,240,0.7)"],
 [data-theme="light"] [style*="rgba(226,232,240,0.75)"] {
   color: var(--text-secondary) !important;
-}
-
-/* White text → primary text */
-[data-theme="light"] [style*="color: \"#fff\""],
-[data-theme="light"] [style*="color: #fff"],
-[data-theme="light"] [style*="color: rgb(255, 255, 255)"] {
-  color: var(--text-primary) !important;
 }
 
 /* Nav background */
