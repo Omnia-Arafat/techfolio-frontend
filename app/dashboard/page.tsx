@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import {
   getMyCompany, updateMyCompany,
-  addTeamMember, removeTeamMember,
-  addProject, removeProject,
+  addTeamMember, updateTeamMember, removeTeamMember,
+  addProject, updateProject, removeProject,
 } from "@/services/dashboard";
-import { getMyPositions, createPosition, deletePosition } from "@/services/positions";
+import { getMyPositions, createPosition, updatePosition, deletePosition } from "@/services/positions";
 import {
   getApplicationsForPosition,
   getMyApplications,
@@ -30,7 +30,7 @@ const TECH_OPTIONS = [
 ];
 const INDUSTRIES = [
   "FinTech","HealthTech","EdTech","E-Commerce","AI / ML","Cybersecurity",
-  "Cloud & DevOps","SaaS","IoT","GovTech","Other",
+  "Cloud & DevOps","SaaS","IoT","GovTech","Tourism","Traveler","Other",
 ];
 
 const card = { borderRadius: 14, background: "var(--bg-card)", border: "1px solid var(--bg-card-border)" };
@@ -67,14 +67,20 @@ export default function DashboardPage() {
   // Team
   const [addingMember, setAddingMember] = useState(false);
   const [newMember, setNewMember] = useState({ name: "", role: "", linkedin: "" });
+  const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
+  const [editMemberForm, setEditMemberForm] = useState({ name: "", role: "", linkedin: "" });
 
   // Projects
   const [addingProject, setAddingProject] = useState(false);
   const [newProject, setNewProject] = useState({ title: "", description: "", techStack: [] as string[], url: "" });
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [editProjectForm, setEditProjectForm] = useState({ title: "", description: "", techStack: [] as string[], url: "" });
 
   // Positions
   const [addingPosition, setAddingPosition] = useState(false);
   const [newPosition, setNewPosition] = useState({ title: "", description: "", type: "HIRING", techStack: [] as string[] });
+  const [editingPositionId, setEditingPositionId] = useState<string | null>(null);
+  const [editPositionForm, setEditPositionForm] = useState({ title: "", description: "", type: "HIRING", techStack: [] as string[] });
 
   // Applications - received (on my positions) grouped by position
   const [receivedApps, setReceivedApps] = useState<Record<string, Application[]>>({});
@@ -157,6 +163,21 @@ export default function DashboardPage() {
     await load();
     setActionLoading(null);
   };
+  const startEditMember = (id: string) => {
+    const member = company?.teamMembers.find((m) => m.id === id);
+    if (!member) return;
+    setEditMemberForm({ name: member.name, role: member.role, linkedin: member.linkedin || "" });
+    setEditingMemberId(id);
+    setAddingMember(false);
+  };
+  const saveEditMember = async () => {
+    if (!token || !editingMemberId || !editMemberForm.name || !editMemberForm.role) return;
+    setActionLoading(editingMemberId);
+    await updateTeamMember(token, editingMemberId, editMemberForm);
+    await load();
+    setEditingMemberId(null);
+    setActionLoading(null);
+  };
   const handleAddProject = async () => {
     if (!token || !newProject.title || !newProject.description) return;
     setActionLoading("add-project");
@@ -173,6 +194,26 @@ export default function DashboardPage() {
     await load();
     setActionLoading(null);
   };
+  const startEditProject = (id: string) => {
+    const project = company?.projects.find((p) => p.id === id);
+    if (!project) return;
+    setEditProjectForm({
+      title: project.title,
+      description: project.description,
+      techStack: project.techStack,
+      url: project.url || "",
+    });
+    setEditingProjectId(id);
+    setAddingProject(false);
+  };
+  const saveEditProject = async () => {
+    if (!token || !editingProjectId || !editProjectForm.title || !editProjectForm.description) return;
+    setActionLoading(editingProjectId);
+    await updateProject(token, editingProjectId, editProjectForm);
+    await load();
+    setEditingProjectId(null);
+    setActionLoading(null);
+  };
   const handleAddPosition = async () => {
     if (!token || !newPosition.title || !newPosition.description) return;
     setActionLoading("add-position");
@@ -187,6 +228,27 @@ export default function DashboardPage() {
     setActionLoading(id);
     await deletePosition(token, id);
     await load();
+    setActionLoading(null);
+  };
+  const startEditPosition = (id: string) => {
+    const position = positions.find((p) => p.id === id);
+    if (!position) return;
+    setEditPositionForm({
+      title: position.title,
+      description: position.description,
+      type: position.type,
+      techStack: position.techStack,
+    });
+    setEditingPositionId(id);
+    setAddingPosition(false);
+    setExpandedPos(null);
+  };
+  const saveEditPosition = async () => {
+    if (!token || !editingPositionId || !editPositionForm.title || !editPositionForm.description) return;
+    setActionLoading(editingPositionId);
+    await updatePosition(token, editingPositionId, editPositionForm);
+    await load();
+    setEditingPositionId(null);
     setActionLoading(null);
   };
   const toggleTech = (tech: string, arr: string[], setArr: (v: string[]) => void) => {
@@ -312,15 +374,33 @@ export default function DashboardPage() {
         {tab === "team" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {company.teamMembers.map((m) => (
-              <div key={m.id} style={{ ...card, padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                <div>
-                  <p style={{ margin: 0, fontWeight: 600, color: "var(--text-primary)", fontSize: 14 }}>{m.name}</p>
-                  <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--text-secondary)" }}>{m.role}</p>
+              editingMemberId === m.id ? (
+                <div key={m.id} style={{ ...card, padding: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+                  <input style={inp} placeholder="Full Name *" value={editMemberForm.name} onChange={(e) => setEditMemberForm({ ...editMemberForm, name: e.target.value })} />
+                  <input style={inp} placeholder="Role / Title *" value={editMemberForm.role} onChange={(e) => setEditMemberForm({ ...editMemberForm, role: e.target.value })} />
+                  <input style={inp} placeholder="LinkedIn URL (optional)" value={editMemberForm.linkedin} onChange={(e) => setEditMemberForm({ ...editMemberForm, linkedin: e.target.value })} />
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button onClick={saveEditMember} disabled={actionLoading === m.id} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", border: "none", background: "linear-gradient(135deg,#7042f8,#00d1ff)", color: "#fff", opacity: actionLoading === m.id ? 0.6 : 1 }}><Check size={13} /> {actionLoading === m.id ? "Saving..." : "Save"}</button>
+                    <button onClick={() => setEditingMemberId(null)} style={{ padding: "7px 14px", borderRadius: 8, fontSize: 13, cursor: "pointer", background: "var(--bg-input)", border: "1px solid var(--bg-input-border)", color: "var(--text-secondary)" }}>Cancel</button>
+                  </div>
                 </div>
-                <button onClick={() => handleRemoveMember(m.id)} disabled={actionLoading === m.id} style={{ padding: "6px 10px", borderRadius: 7, cursor: "pointer", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171", opacity: actionLoading === m.id ? 0.5 : 1 }}>
-                  <Trash2 size={13} />
-                </button>
-              </div>
+              ) : (
+                <div key={m.id} style={{ ...card, padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                  <div>
+                    <p style={{ margin: 0, fontWeight: 600, color: "var(--text-primary)", fontSize: 14 }}>{m.name}</p>
+                    <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--text-secondary)" }}>{m.role}</p>
+                    {m.linkedin && <a href={m.linkedin} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: 4, fontSize: 11, color: "var(--accent-cyan)" }}>{m.linkedin}</a>}
+                  </div>
+                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                    <button onClick={() => startEditMember(m.id)} disabled={actionLoading === m.id} style={{ padding: "6px 10px", borderRadius: 7, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px solid rgba(112,66,248,0.2)", color: "var(--accent-purple)", opacity: actionLoading === m.id ? 0.5 : 1 }}>
+                      <Pencil size={13} />
+                    </button>
+                    <button onClick={() => handleRemoveMember(m.id)} disabled={actionLoading === m.id} style={{ padding: "6px 10px", borderRadius: 7, cursor: "pointer", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171", opacity: actionLoading === m.id ? 0.5 : 1 }}>
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                </div>
+              )
             ))}
             {addingMember ? (
               <div style={{ ...card, padding: 20, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -333,7 +413,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             ) : (
-              <button onClick={() => setAddingMember(true)} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, padding: "10px 18px", borderRadius: 10, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px dashed rgba(112,66,248,0.35)", color: "var(--accent-purple)" }}>
+              <button onClick={() => { setAddingMember(true); setEditingMemberId(null); }} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, padding: "10px 18px", borderRadius: 10, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px dashed rgba(112,66,248,0.35)", color: "var(--accent-purple)" }}>
                 <Plus size={14} /> Add Member
               </button>
             )}
@@ -344,18 +424,44 @@ export default function DashboardPage() {
         {tab === "projects" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {company.projects.map((p) => (
-              <div key={p.id} style={{ ...card, padding: "16px 20px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ margin: 0, fontWeight: 600, color: "var(--text-primary)", fontSize: 14 }}>{p.title}</p>
-                  <p style={{ margin: "4px 0 8px", fontSize: 12, color: "var(--text-secondary)" }}>{p.description}</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                    {p.techStack.map((t) => <span key={t} style={{ fontSize: 11, padding: "2px 8px", borderRadius: 5, background: "rgba(0,209,255,0.07)", color: "var(--accent-cyan)" }}>{t}</span>)}
+              editingProjectId === p.id ? (
+                <div key={p.id} style={{ ...card, padding: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+                  <input style={inp} placeholder="Project Title *" value={editProjectForm.title} onChange={(e) => setEditProjectForm({ ...editProjectForm, title: e.target.value })} />
+                  <textarea rows={2} style={{ ...inp, resize: "vertical" }} placeholder="Description *" value={editProjectForm.description} onChange={(e) => setEditProjectForm({ ...editProjectForm, description: e.target.value })} />
+                  <div>
+                    <label style={lbl}>Tech Stack</label>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                      {TECH_OPTIONS.slice(0, 16).map((tech) => (
+                        <button key={tech} type="button" onClick={() => toggleTech(tech, editProjectForm.techStack, (v) => setEditProjectForm({ ...editProjectForm, techStack: v }))} style={{ padding: "3px 9px", borderRadius: 6, fontSize: 11, cursor: "pointer", background: editProjectForm.techStack.includes(tech) ? "rgba(0,209,255,0.15)" : "var(--bg-input)", border: editProjectForm.techStack.includes(tech) ? "1px solid rgba(0,209,255,0.35)" : "1px solid var(--bg-card-border)", color: editProjectForm.techStack.includes(tech) ? "var(--accent-cyan)" : "var(--text-secondary)" }}>{tech}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <input style={inp} placeholder="Project URL (optional)" value={editProjectForm.url} onChange={(e) => setEditProjectForm({ ...editProjectForm, url: e.target.value })} />
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button onClick={saveEditProject} disabled={actionLoading === p.id} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", border: "none", background: "linear-gradient(135deg,#7042f8,#00d1ff)", color: "#fff", opacity: actionLoading === p.id ? 0.6 : 1 }}><Check size={13} /> {actionLoading === p.id ? "Saving..." : "Save"}</button>
+                    <button onClick={() => setEditingProjectId(null)} style={{ padding: "7px 14px", borderRadius: 8, fontSize: 13, cursor: "pointer", background: "var(--bg-input)", border: "1px solid var(--bg-input-border)", color: "var(--text-secondary)" }}>Cancel</button>
                   </div>
                 </div>
-                <button onClick={() => handleRemoveProject(p.id)} disabled={actionLoading === p.id} style={{ padding: "6px 10px", borderRadius: 7, cursor: "pointer", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171", opacity: actionLoading === p.id ? 0.5 : 1, flexShrink: 0 }}>
-                  <Trash2 size={13} />
-                </button>
-              </div>
+              ) : (
+                <div key={p.id} style={{ ...card, padding: "16px 20px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ margin: 0, fontWeight: 600, color: "var(--text-primary)", fontSize: 14 }}>{p.title}</p>
+                    <p style={{ margin: "4px 0 8px", fontSize: 12, color: "var(--text-secondary)" }}>{p.description}</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                      {p.techStack.map((t) => <span key={t} style={{ fontSize: 11, padding: "2px 8px", borderRadius: 5, background: "rgba(0,209,255,0.07)", color: "var(--accent-cyan)" }}>{t}</span>)}
+                    </div>
+                    {p.url && <a href={p.url} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: 8, fontSize: 12, color: "var(--accent-cyan)" }}>{p.url}</a>}
+                  </div>
+                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                    <button onClick={() => startEditProject(p.id)} disabled={actionLoading === p.id} style={{ padding: "6px 10px", borderRadius: 7, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px solid rgba(112,66,248,0.2)", color: "var(--accent-purple)", opacity: actionLoading === p.id ? 0.5 : 1 }}>
+                      <Pencil size={13} />
+                    </button>
+                    <button onClick={() => handleRemoveProject(p.id)} disabled={actionLoading === p.id} style={{ padding: "6px 10px", borderRadius: 7, cursor: "pointer", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171", opacity: actionLoading === p.id ? 0.5 : 1 }}>
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                </div>
+              )
             ))}
             {addingProject ? (
               <div style={{ ...card, padding: 20, display: "flex", flexDirection: "column", gap: 10 }}>
@@ -376,7 +482,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             ) : (
-              <button onClick={() => setAddingProject(true)} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, padding: "10px 18px", borderRadius: 10, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px dashed rgba(112,66,248,0.35)", color: "var(--accent-purple)" }}>
+              <button onClick={() => { setAddingProject(true); setEditingProjectId(null); }} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, padding: "10px 18px", borderRadius: 10, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px dashed rgba(112,66,248,0.35)", color: "var(--accent-purple)" }}>
                 <Plus size={14} /> Add Project
               </button>
             )}
@@ -387,6 +493,29 @@ export default function DashboardPage() {
         {tab === "positions" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {positions.map((pos) => (
+              editingPositionId === pos.id ? (
+                <div key={pos.id} style={{ ...card, padding: 20, display: "flex", flexDirection: "column", gap: 10 }}>
+                  <input style={inp} placeholder="Position Title *" value={editPositionForm.title} onChange={(e) => setEditPositionForm({ ...editPositionForm, title: e.target.value })} />
+                  <textarea rows={2} style={{ ...inp, resize: "vertical" }} placeholder="Description *" value={editPositionForm.description} onChange={(e) => setEditPositionForm({ ...editPositionForm, description: e.target.value })} />
+                  <div style={{ display: "flex", gap: 8 }}>
+                    {["HIRING", "COLLABORATION"].map((t) => (
+                      <button key={t} type="button" onClick={() => setEditPositionForm({ ...editPositionForm, type: t })} className={editPositionForm.type === t ? "btn-gradient" : ""} style={{ padding: "6px 14px", borderRadius: 8, fontSize: 12, cursor: "pointer", background: editPositionForm.type === t ? "linear-gradient(135deg,#7042f8,#00d1ff)" : "var(--bg-input)", border: editPositionForm.type === t ? "1px solid transparent" : "1px solid var(--bg-input-border)", color: editPositionForm.type === t ? "#fff" : "var(--text-secondary)" }}>{t}</button>
+                    ))}
+                  </div>
+                  <div>
+                    <label style={lbl}>Tech Stack</label>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+                      {TECH_OPTIONS.slice(0, 16).map((tech) => (
+                        <button key={tech} type="button" onClick={() => toggleTech(tech, editPositionForm.techStack, (v) => setEditPositionForm({ ...editPositionForm, techStack: v }))} style={{ padding: "3px 9px", borderRadius: 6, fontSize: 11, cursor: "pointer", background: editPositionForm.techStack.includes(tech) ? "rgba(0,209,255,0.15)" : "var(--bg-input)", border: editPositionForm.techStack.includes(tech) ? "1px solid rgba(0,209,255,0.35)" : "1px solid var(--bg-card-border)", color: editPositionForm.techStack.includes(tech) ? "var(--accent-cyan)" : "var(--text-secondary)" }}>{tech}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button onClick={saveEditPosition} disabled={actionLoading === pos.id} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", border: "none", background: "linear-gradient(135deg,#7042f8,#00d1ff)", color: "#fff", opacity: actionLoading === pos.id ? 0.6 : 1 }}><Check size={13} /> {actionLoading === pos.id ? "Saving..." : "Save"}</button>
+                    <button onClick={() => setEditingPositionId(null)} style={{ padding: "7px 14px", borderRadius: 8, fontSize: 13, cursor: "pointer", background: "var(--bg-input)", border: "1px solid var(--bg-input-border)", color: "var(--text-secondary)" }}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
               <div key={pos.id} style={{ ...card, padding: "16px 20px" }}>
                 <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -402,6 +531,9 @@ export default function DashboardPage() {
                   <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
                     <button onClick={() => togglePositionApps(pos.id)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 7, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px solid rgba(112,66,248,0.2)", color: "var(--accent-purple)", fontSize: 12 }}>
                       <Inbox size={12} /> {expandedPos === pos.id ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                    </button>
+                    <button onClick={() => startEditPosition(pos.id)} disabled={actionLoading === pos.id} style={{ padding: "6px 10px", borderRadius: 7, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px solid rgba(112,66,248,0.2)", color: "var(--accent-purple)", opacity: actionLoading === pos.id ? 0.5 : 1 }}>
+                      <Pencil size={13} />
                     </button>
                     <button onClick={() => handleDeletePosition(pos.id)} disabled={actionLoading === pos.id} style={{ padding: "6px 10px", borderRadius: 7, cursor: "pointer", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171", opacity: actionLoading === pos.id ? 0.5 : 1 }}>
                       <Trash2 size={13} />
@@ -457,6 +589,7 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
+              )
             ))}
 
             {addingPosition ? (
@@ -482,7 +615,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             ) : (
-              <button onClick={() => setAddingPosition(true)} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, padding: "10px 18px", borderRadius: 10, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px dashed rgba(112,66,248,0.35)", color: "var(--accent-purple)" }}>
+              <button onClick={() => { setAddingPosition(true); setEditingPositionId(null); }} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 500, padding: "10px 18px", borderRadius: 10, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px dashed rgba(112,66,248,0.35)", color: "var(--accent-purple)" }}>
                 <Plus size={14} /> Post Position
               </button>
             )}

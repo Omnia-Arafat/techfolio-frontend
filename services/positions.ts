@@ -33,6 +33,10 @@ export async function createPosition(token: string, data: { title: string; descr
   return fetchApi<Position>("/positions", { method: "POST", headers: authHeaders(token), body: JSON.stringify(data) });
 }
 
+export async function updatePosition(token: string, id: string, data: { title?: string; description?: string; type?: string; techStack?: string[]; isActive?: boolean }) {
+  return fetchApi(`/positions/${id}`, { method: "PATCH", headers: authHeaders(token), body: JSON.stringify(data) });
+}
+
 export async function deletePosition(token: string, id: string) {
   return fetchApi(`/positions/${id}`, { method: "DELETE", headers: authHeaders(token) });
 }

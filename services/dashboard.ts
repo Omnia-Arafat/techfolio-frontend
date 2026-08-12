@@ -17,12 +17,20 @@ export async function addTeamMember(token: string, data: { name: string; role: s
   return fetchApi("/dashboard/me/team", { method: "POST", headers: authHeaders(token), body: JSON.stringify(data) });
 }
 
+export async function updateTeamMember(token: string, memberId: string, data: { name?: string; role?: string; linkedin?: string }) {
+  return fetchApi(`/dashboard/me/team/${memberId}`, { method: "PATCH", headers: authHeaders(token), body: JSON.stringify(data) });
+}
+
 export async function removeTeamMember(token: string, memberId: string) {
   return fetchApi(`/dashboard/me/team/${memberId}`, { method: "DELETE", headers: authHeaders(token) });
 }
 
 export async function addProject(token: string, data: { title: string; description: string; techStack: string[]; url?: string }) {
   return fetchApi("/dashboard/me/projects", { method: "POST", headers: authHeaders(token), body: JSON.stringify(data) });
+}
+
+export async function updateProject(token: string, projectId: string, data: { title?: string; description?: string; techStack?: string[]; url?: string }) {
+  return fetchApi(`/dashboard/me/projects/${projectId}`, { method: "PATCH", headers: authHeaders(token), body: JSON.stringify(data) });
 }
 
 export async function removeProject(token: string, projectId: string) {

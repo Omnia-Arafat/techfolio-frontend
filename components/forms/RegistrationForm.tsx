@@ -17,7 +17,8 @@ import {
 
 const INDUSTRIES = [
   "FinTech", "HealthTech", "EdTech", "E-Commerce", "AI / ML",
-  "Cybersecurity", "Cloud & DevOps", "SaaS", "IoT", "GovTech", "Other",
+  "Cybersecurity", "Cloud & DevOps", "SaaS", "IoT", "GovTech",
+  "Tourism", "Traveler", "Other",
 ];
 
 const TECH_OPTIONS = [
