@@ -17,6 +17,7 @@ import {
 import type { Company } from "@/types";
 import type { Position } from "@/services/positions";
 import type { Application } from "@/services/applications";
+import { normalizeExternalUrl } from "@/lib/url";
 import { SkeletonCard, SkeletonList, Skeleton, SkeletonDashboardRow } from "@/components/ui/Skeleton";
 import {
   Building2, Users, FolderKanban, Briefcase, Inbox,
@@ -325,7 +326,7 @@ export default function DashboardPage() {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   <div><span style={lbl}>Bio</span><p style={{ color: "var(--text-primary)", fontSize: 14, margin: 0 }}>{company.bio}</p></div>
-                  {company.website && <div><span style={lbl}>Website</span><a href={company.website} target="_blank" rel="noreferrer" style={{ color: "var(--accent-cyan)", fontSize: 14 }}>{company.website}</a></div>}
+                  {company.website && <div><span style={lbl}>Website</span><a href={normalizeExternalUrl(company.website)!} target="_blank" rel="noreferrer" style={{ color: "var(--accent-cyan)", fontSize: 14 }}>{company.website}</a></div>}
                   <div>
                     <span style={lbl}>Tech Stack</span>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 4 }}>
@@ -389,7 +390,7 @@ export default function DashboardPage() {
                   <div>
                     <p style={{ margin: 0, fontWeight: 600, color: "var(--text-primary)", fontSize: 14 }}>{m.name}</p>
                     <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--text-secondary)" }}>{m.role}</p>
-                    {m.linkedin && <a href={m.linkedin} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: 4, fontSize: 11, color: "var(--accent-cyan)" }}>{m.linkedin}</a>}
+                    {m.linkedin && <a href={normalizeExternalUrl(m.linkedin)!} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: 4, fontSize: 11, color: "var(--accent-cyan)" }}>{m.linkedin}</a>}
                   </div>
                   <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
                     <button onClick={() => startEditMember(m.id)} disabled={actionLoading === m.id} style={{ padding: "6px 10px", borderRadius: 7, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px solid rgba(112,66,248,0.2)", color: "var(--accent-purple)", opacity: actionLoading === m.id ? 0.5 : 1 }}>
@@ -450,7 +451,7 @@ export default function DashboardPage() {
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                       {p.techStack.map((t) => <span key={t} style={{ fontSize: 11, padding: "2px 8px", borderRadius: 5, background: "rgba(0,209,255,0.07)", color: "var(--accent-cyan)" }}>{t}</span>)}
                     </div>
-                    {p.url && <a href={p.url} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: 8, fontSize: 12, color: "var(--accent-cyan)" }}>{p.url}</a>}
+                    {p.url && <a href={normalizeExternalUrl(p.url)!} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: 8, fontSize: 12, color: "var(--accent-cyan)" }}>{p.url}</a>}
                   </div>
                   <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
                     <button onClick={() => startEditProject(p.id)} disabled={actionLoading === p.id} style={{ padding: "6px 10px", borderRadius: 7, cursor: "pointer", background: "rgba(112,66,248,0.08)", border: "1px solid rgba(112,66,248,0.2)", color: "var(--accent-purple)", opacity: actionLoading === p.id ? 0.5 : 1 }}>

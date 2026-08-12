@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getUserFromRequest, unauthorized, forbidden } from "@/lib/auth-utils";
+import { normalizeExternalUrl } from "@/lib/url";
 
 export async function POST(req: NextRequest) {
   const user = await getUserFromRequest(req);
@@ -10,7 +11,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { data, error } = await supabase
     .from("team_members")
-    .insert({ company_id: user.companyId, name: body.name, role: body.role, linkedin: body.linkedin || null })
+    .insert({ company_id: user.companyId, name: body.name, role: body.role, linkedin: normalizeExternalUrl(body.linkedin) })
     .select()
     .single();
 

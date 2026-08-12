@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
 import * as crypto from "crypto";
+import { normalizeExternalUrl } from "@/lib/url";
 
 function slugify(text: string) {
   return text.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
@@ -46,18 +47,18 @@ export async function POST(req: NextRequest) {
 
   const { data: company, error } = await supabase
     .from("companies")
-    .insert({ name: dto.name, slug, bio: dto.bio, industry: dto.industry, tech_stack: dto.techStack, website: dto.website || null, logo: dto.logo || null, status: "PENDING" })
+    .insert({ name: dto.name, slug, bio: dto.bio, industry: dto.industry, tech_stack: dto.techStack, website: normalizeExternalUrl(dto.website), logo: dto.logo || null, status: "PENDING" })
     .select()
     .single();
 
   if (error) return Response.json({ message: error.message }, { status: 500 });
 
   if (dto.teamMembers?.length > 0) {
-    await supabase.from("team_members").insert(dto.teamMembers.map((m: any) => ({ company_id: company.id, name: m.name, role: m.role, linkedin: m.linkedin || null })));
+    await supabase.from("team_members").insert(dto.teamMembers.map((m: any) => ({ company_id: company.id, name: m.name, role: m.role, linkedin: normalizeExternalUrl(m.linkedin) })));
   }
 
   if (dto.projects?.length > 0) {
-    await supabase.from("projects").insert(dto.projects.map((p: any) => ({ company_id: company.id, title: p.title, description: p.description, tech_stack: p.techStack, url: p.url || null })));
+    await supabase.from("projects").insert(dto.projects.map((p: any) => ({ company_id: company.id, title: p.title, description: p.description, tech_stack: p.techStack, url: normalizeExternalUrl(p.url) })));
   }
 
   const generatedPassword = generatePassword();

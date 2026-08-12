@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getUserFromRequest, unauthorized, forbidden, notFound } from "@/lib/auth-utils";
+import { normalizeExternalUrl } from "@/lib/url";
 
 export async function GET(req: NextRequest) {
   const user = await getUserFromRequest(req);
@@ -36,7 +37,7 @@ export async function PATCH(req: NextRequest) {
   if (body.bio) update.bio = body.bio;
   if (body.industry) update.industry = body.industry;
   if (body.techStack) update.tech_stack = body.techStack;
-  if (body.website !== undefined) update.website = body.website || null;
+  if (body.website !== undefined) update.website = normalizeExternalUrl(body.website);
 
   const { error } = await supabase.from("companies").update(update).eq("id", user.companyId);
   if (error) return Response.json({ message: error.message }, { status: 500 });

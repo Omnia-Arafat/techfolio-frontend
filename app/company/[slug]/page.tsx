@@ -6,6 +6,7 @@ import Link from "next/link";
 import { getCompanyBySlug } from "@/services/company";
 import { Building2, Globe, ArrowLeft, ExternalLink, FolderGit2 } from "lucide-react";
 import type { Company } from "@/types";
+import { normalizeExternalUrl } from "@/lib/url";
 import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
 
 function getInitials(name: string) {
@@ -95,7 +96,7 @@ export default function CompanyProfilePage() {
               </div>
               <p style={{ marginTop: 12, fontSize: 14, lineHeight: 1.7, color: "var(--text-secondary)", maxWidth: 600 }}>{company!.bio}</p>
               {company!.website && (
-                <a href={company!.website} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 14, fontSize: 13, color: "var(--accent-cyan)", textDecoration: "none" }}>
+                <a href={normalizeExternalUrl(company!.website)!} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 14, fontSize: 13, color: "var(--accent-cyan)", textDecoration: "none" }}>
                   <Globe size={14} /> {company!.website}
                 </a>
               )}
@@ -145,7 +146,7 @@ export default function CompanyProfilePage() {
                       <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>{member.role}</div>
                     </div>
                     {member.linkedin && (
-                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: 8, background: "var(--accent-purple-bg)", border: "1px solid var(--accent-purple-border)", color: "var(--accent-purple)", flexShrink: 0, textDecoration: "none" }}>
+                      <a href={normalizeExternalUrl(member.linkedin)!} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: 8, background: "var(--accent-purple-bg)", border: "1px solid var(--accent-purple-border)", color: "var(--accent-purple)", flexShrink: 0, textDecoration: "none" }}>
                         <ExternalLink size={14} />
                       </a>
                     )}
@@ -173,7 +174,7 @@ export default function CompanyProfilePage() {
                       <h4 style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: 15, margin: 0 }}>{project.title}</h4>
                     </div>
                     {project.url && (
-                      <a href={project.url} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--accent-cyan)", textDecoration: "none", flexShrink: 0, padding: "4px 10px", borderRadius: 6, background: "rgba(0,209,255,0.06)", border: "1px solid rgba(0,209,255,0.15)" }}>
+                      <a href={normalizeExternalUrl(project.url)!} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--accent-cyan)", textDecoration: "none", flexShrink: 0, padding: "4px 10px", borderRadius: 6, background: "rgba(0,209,255,0.06)", border: "1px solid rgba(0,209,255,0.15)" }}>
                         <ExternalLink size={12} /> View
                       </a>
                     )}

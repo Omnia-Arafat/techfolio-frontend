@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getUserFromRequest, unauthorized, forbidden } from "@/lib/auth-utils";
+import { normalizeExternalUrl } from "@/lib/url";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ projectId: string }> }) {
   const user = await getUserFromRequest(req);
@@ -13,7 +14,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ pr
   if (body.title !== undefined) update.title = body.title;
   if (body.description !== undefined) update.description = body.description;
   if (body.techStack !== undefined) update.tech_stack = body.techStack;
-  if (body.url !== undefined) update.url = body.url || null;
+  if (body.url !== undefined) update.url = normalizeExternalUrl(body.url);
 
   const { data, error } = await supabase
     .from("projects")
