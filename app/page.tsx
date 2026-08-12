@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Hero from "@/components/sections/Hero";
+import HiringSection from "@/components/sections/HiringSection";
 import CompanyCard from "@/components/ui/CompanyCard";
 import { SkeletonCard } from "@/components/ui/Skeleton";
 import { getApprovedCompanies } from "@/services/company";
@@ -22,6 +23,8 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+
+      <HiringSection />
 
       {/* Directory Section */}
       <section id="directory" style={{ position: "relative", padding: "0 24px 80px" }}>

@@ -42,6 +42,20 @@ export default function Hero() {
           >
             Explore Companies <ArrowRight size={15} />
           </Link>
+          <Link
+            href="#jobs"
+            className="btn-press"
+            onMouseMove={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = ((e.clientX - rect.left) / rect.width - 0.5) * 8;
+              const y = ((e.clientY - rect.top) / rect.height - 0.5) * 8;
+              e.currentTarget.style.transform = `perspective(400px) rotateX(${-y}deg) rotateY(${x}deg) scale(1.02)`;
+            }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = ""; }}
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 24px", borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: "none", background: "var(--bg-card)", border: "1px solid var(--bg-card-border)", color: "var(--text-secondary)" }}
+          >
+            Browse Jobs <ArrowRight size={15} />
+          </Link>
           <Link href="/register" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 24px", borderRadius: 10, fontSize: 14, fontWeight: 600, textDecoration: "none", background: "var(--bg-card)", border: "1px solid var(--bg-card-border)", color: "var(--text-secondary)" }}>
             List Your Company
           </Link>

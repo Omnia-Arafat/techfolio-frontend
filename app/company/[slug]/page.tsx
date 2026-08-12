@@ -4,10 +4,15 @@ import { useEffect, useState } from "react";
 import { useParams, notFound } from "next/navigation";
 import Link from "next/link";
 import { getCompanyBySlug } from "@/services/company";
-import { Building2, Globe, ArrowLeft, ExternalLink, FolderGit2 } from "lucide-react";
+import { getPositions } from "@/services/positions";
+import { Building2, Globe, ArrowLeft, ExternalLink, FolderGit2, Briefcase } from "lucide-react";
 import type { Company } from "@/types";
+import type { Position } from "@/services/positions";
 import { normalizeExternalUrl } from "@/lib/url";
 import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
+import PositionCard from "@/components/ui/PositionCard";
+import ApplyModal from "@/components/ui/ApplyModal";
+import { useAuth } from "@/lib/auth-context";
 
 function getInitials(name: string) {
   return name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
@@ -22,12 +27,23 @@ function avatarColor(name: string) {
 
 export default function CompanyProfilePage() {
   const { slug } = useParams<{ slug: string }>();
+  const { user } = useAuth();
   const [company, setCompany] = useState<Company | null>(null);
+  const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(true);
+  const [applyTarget, setApplyTarget] = useState<Position | null>(null);
 
   useEffect(() => {
     if (!slug) return;
-    getCompanyBySlug(slug).then((data) => { setCompany(data); setLoading(false); }).catch(() => setLoading(false));
+    Promise.all([getCompanyBySlug(slug), getPositions()])
+      .then(([data, allPositions]) => {
+        setCompany(data);
+        if (data) {
+          setPositions(allPositions.filter((p) => p.companyId === data.id && p.isActive));
+        }
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [slug]);
 
   if (loading) return (
@@ -67,6 +83,18 @@ export default function CompanyProfilePage() {
   );
 
   if (!company || company.status !== "APPROVED") notFound();
+
+  const isMyPosition = (pos: Position) => user?.role === "COMPANY" && user.companyId === pos.companyId;
+  const openApply = (pos: Position) => setApplyTarget(pos);
+  const getApplyInitialForm = () => {
+    if (user?.role !== "COMPANY") return undefined;
+    return {
+      applicantName: company.name,
+      applicantEmail: user.email || "",
+      message: "",
+      applicantCompanyId: user.companyId || "",
+    };
+  };
 
   const divider = { borderTop: "1px solid var(--bg-card-border)", marginTop: 20, paddingTop: 20 };
 
@@ -157,6 +185,29 @@ export default function CompanyProfilePage() {
           )}
         </div>
 
+        {/* Open Positions */}
+        <div style={{ marginBottom: 24 }}>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 16px", display: "flex", alignItems: "center", gap: 8 }}>
+            <Briefcase size={20} style={{ color: "var(--accent-purple)" }} />
+            Open Positions
+          </h2>
+          {positions.length === 0 ? (
+            <p style={{ color: "var(--text-muted)", fontSize: 13 }}>No open positions at the moment.</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {positions.map((pos) => (
+                <PositionCard
+                  key={pos.id}
+                  position={pos}
+                  onApply={openApply}
+                  showCompany={false}
+                  isMine={isMyPosition(pos)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Projects */}
         <div>
           <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 16px" }}>Projects</h2>
@@ -192,6 +243,15 @@ export default function CompanyProfilePage() {
         </div>
 
       </div>
+
+      {applyTarget && (
+        <ApplyModal
+          position={applyTarget}
+          onClose={() => setApplyTarget(null)}
+          initialForm={getApplyInitialForm()}
+          isCompanyUser={user?.role === "COMPANY"}
+        />
+      )}
     </div>
   );
 }
