@@ -50,10 +50,29 @@ export async function applyToPosition(data: {
   });
 }
 
-export async function getApplicationCvDownloadUrl(token: string, applicationId: string) {
-  return fetchApi<{ url: string }>(`/applications/${applicationId}/cv`, {
+export async function downloadApplicationCv(token: string, applicationId: string) {
+  const res = await fetch(`/api/applications/${applicationId}/cv`, {
     headers: authHeaders(token),
   });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.message || `Failed to download CV (${res.status})`);
+  }
+
+  const blob = await res.blob();
+  const disposition = res.headers.get("Content-Disposition") || "";
+  const match = disposition.match(/filename="(.+?)"/);
+  const filename = match?.[1] || `application-${applicationId}.pdf`;
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 
 export async function getApplicationsForPosition(token: string, positionId: string) {

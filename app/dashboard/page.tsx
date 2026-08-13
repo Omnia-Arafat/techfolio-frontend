@@ -13,7 +13,7 @@ import {
   getApplicationsForPosition,
   getMyApplications,
   updateApplicationStatus,
-  getApplicationCvDownloadUrl,
+  downloadApplicationCv,
 } from "@/services/applications";
 import type { Company } from "@/types";
 import type { Position } from "@/services/positions";
@@ -92,6 +92,7 @@ export default function DashboardPage() {
   const [appsSubTab, setAppsSubTab] = useState<"received" | "sent">("received");
 
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [cvError, setCvError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -139,10 +140,12 @@ export default function DashboardPage() {
   const handleDownloadCv = async (appId: string) => {
     if (!token) return;
     setActionLoading(`cv-${appId}`);
+    setCvError(null);
     try {
-      const { url } = await getApplicationCvDownloadUrl(token, appId);
-      window.open(url, "_blank", "noopener,noreferrer");
-    } catch {}
+      await downloadApplicationCv(token, appId);
+    } catch (e) {
+      setCvError(e instanceof Error ? e.message : "Failed to download CV");
+    }
     setActionLoading(null);
   };
 
@@ -323,6 +326,15 @@ export default function DashboardPage() {
             </button>
           ))}
         </div>
+
+        {cvError && (
+          <div style={{ marginBottom: 16, padding: "10px 14px", borderRadius: 10, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)", color: "#f87171", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <span>{cvError}</span>
+            <button onClick={() => setCvError(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "#f87171", padding: 0 }}>
+              <X size={14} />
+            </button>
+          </div>
+        )}
 
         {/* INFO TAB */}
         {tab === "info" && (
