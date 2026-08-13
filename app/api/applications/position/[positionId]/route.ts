@@ -24,7 +24,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ posi
     (data ?? []).map((a: any) => ({
       id: a.id, positionId: a.position_id, applicantCompanyId: a.applicant_company_id,
       applicantName: a.applicant_name, applicantEmail: a.applicant_email,
-      message: a.message, status: a.status, createdAt: a.created_at,
+      message: a.message, cvUrl: a.cv_url ?? null, hasCv: Boolean(a.cv_url),
+      status: a.status, createdAt: a.created_at,
       applicantCompany: a.companies ? { name: a.companies.name, slug: a.companies.slug, industry: a.companies.industry } : null,
     }))
   );

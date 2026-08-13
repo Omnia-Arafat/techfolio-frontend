@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Handshake, Send, X } from "lucide-react";
+import { Check, FileText, Handshake, Send, X } from "lucide-react";
 import type { Position } from "@/services/positions";
 import { applyToPosition } from "@/services/applications";
 
@@ -23,17 +23,38 @@ interface ApplyModalProps {
 }
 
 export default function ApplyModal({ position, onClose, initialForm, isCompanyUser }: ApplyModalProps) {
+  const isHiring = position.type === "HIRING";
   const [applyForm, setApplyForm] = useState<ApplyForm>({
     applicantName: initialForm?.applicantName || "",
     applicantEmail: initialForm?.applicantEmail || "",
     message: initialForm?.message || "",
     applicantCompanyId: initialForm?.applicantCompanyId || "",
   });
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [cvError, setCvError] = useState<string | null>(null);
   const [applying, setApplying] = useState(false);
   const [applyResult, setApplyResult] = useState<{ success: boolean; message: string } | null>(null);
 
+  const handleCvChange = (file: File | null) => {
+    setCvFile(file);
+    setCvError(null);
+    if (!file) return;
+    const ext = file.name.split(".").pop()?.toLowerCase() || "";
+    if (!["pdf", "doc", "docx"].includes(ext)) {
+      setCvError("CV must be a PDF, DOC, or DOCX file");
+      setCvFile(null);
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setCvError("CV must be 5MB or smaller");
+      setCvFile(null);
+    }
+  };
+
+  const canSubmit = applyForm.applicantName && applyForm.applicantEmail && (!isHiring || cvFile) && !cvError;
+
   const handleApply = async () => {
-    if (!applyForm.applicantName || !applyForm.applicantEmail) return;
+    if (!canSubmit) return;
     setApplying(true);
     try {
       await applyToPosition({
@@ -42,6 +63,7 @@ export default function ApplyModal({ position, onClose, initialForm, isCompanyUs
         applicantEmail: applyForm.applicantEmail,
         message: applyForm.message || undefined,
         applicantCompanyId: applyForm.applicantCompanyId || undefined,
+        cv: isHiring ? cvFile || undefined : undefined,
       });
       setApplyResult({
         success: true,
@@ -97,16 +119,34 @@ export default function ApplyModal({ position, onClose, initialForm, isCompanyUs
               <label style={lbl}>Email *</label>
               <input style={inp} type="email" placeholder="contact@company.com" value={applyForm.applicantEmail} onChange={(e) => setApplyForm({ ...applyForm, applicantEmail: e.target.value })} />
             </div>
+            {isHiring && (
+              <div>
+                <label style={lbl}>CV / Resume *</label>
+                <label style={{ ...inp, display: "flex", alignItems: "center", gap: 8, cursor: "pointer", width: "auto" }}>
+                  <FileText size={16} style={{ color: "var(--accent-cyan)", flexShrink: 0 }} />
+                  <span style={{ fontSize: 13, color: cvFile ? "var(--text-primary)" : "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {cvFile ? cvFile.name : "Choose PDF, DOC, or DOCX (max 5MB)"}
+                  </span>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    onChange={(e) => handleCvChange(e.target.files?.[0] || null)}
+                    style={{ display: "none" }}
+                  />
+                </label>
+                {cvError && <p style={{ margin: "6px 0 0", fontSize: 11, color: "#f87171" }}>{cvError}</p>}
+              </div>
+            )}
             <div>
               <label style={lbl}>{position.type === "COLLABORATION" ? "Why do you want to collaborate? (optional)" : "Cover message (optional)"}</label>
               <textarea rows={3} style={{ ...inp, resize: "vertical" }} placeholder={position.type === "COLLABORATION" ? "Describe the collaboration opportunity..." : "Tell them why you're a great fit..."} value={applyForm.message} onChange={(e) => setApplyForm({ ...applyForm, message: e.target.value })} />
             </div>
-            <button onClick={handleApply} disabled={applying || !applyForm.applicantName || !applyForm.applicantEmail} style={{
+            <button onClick={handleApply} disabled={applying || !canSubmit} style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
               padding: "11px 20px", borderRadius: 10, fontSize: 14, fontWeight: 600,
               cursor: "pointer", border: "none", color: "#fff",
               background: position.type === "COLLABORATION" ? "linear-gradient(135deg,#7042f8,#a78bfa)" : "linear-gradient(135deg,#7042f8,#00d1ff)",
-              opacity: applying || !applyForm.applicantName || !applyForm.applicantEmail ? 0.5 : 1,
+              opacity: applying || !canSubmit ? 0.5 : 1,
             }}>
               {applying ? "Sending..." : position.type === "COLLABORATION" ? <><Handshake size={14} /> Send Collaboration Request</> : <><Send size={14} /> Submit Application</>}
             </button>

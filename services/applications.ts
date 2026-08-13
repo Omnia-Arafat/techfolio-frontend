@@ -7,6 +7,8 @@ export interface Application {
   applicantName: string;
   applicantEmail: string;
   message: string | null;
+  cvUrl?: string | null;
+  hasCv?: boolean;
   status: "PENDING" | "ACCEPTED" | "REJECTED";
   createdAt: string;
   applicantCompany?: { name: string; slug: string; industry: string } | null;
@@ -27,10 +29,30 @@ export async function applyToPosition(data: {
   applicantEmail: string;
   message?: string;
   applicantCompanyId?: string;
+  cv?: File;
 }) {
+  const { cv, ...fields } = data;
+
+  if (cv) {
+    const form = new FormData();
+    form.append("positionId", fields.positionId);
+    form.append("applicantName", fields.applicantName);
+    form.append("applicantEmail", fields.applicantEmail);
+    if (fields.message) form.append("message", fields.message);
+    if (fields.applicantCompanyId) form.append("applicantCompanyId", fields.applicantCompanyId);
+    form.append("cv", cv);
+    return fetchApi<Application>("/applications", { method: "POST", body: form });
+  }
+
   return fetchApi<Application>("/applications", {
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(fields),
+  });
+}
+
+export async function getApplicationCvDownloadUrl(token: string, applicationId: string) {
+  return fetchApi<{ url: string }>(`/applications/${applicationId}/cv`, {
+    headers: authHeaders(token),
   });
 }
 

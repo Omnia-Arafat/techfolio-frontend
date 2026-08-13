@@ -13,6 +13,7 @@ import {
   getApplicationsForPosition,
   getMyApplications,
   updateApplicationStatus,
+  getApplicationCvDownloadUrl,
 } from "@/services/applications";
 import type { Company } from "@/types";
 import type { Position } from "@/services/positions";
@@ -21,7 +22,7 @@ import { normalizeExternalUrl } from "@/lib/url";
 import { SkeletonCard, SkeletonList, Skeleton, SkeletonDashboardRow } from "@/components/ui/Skeleton";
 import {
   Building2, Users, FolderKanban, Briefcase, Inbox,
-  Plus, Trash2, Pencil, Check, X, ChevronDown, ChevronUp, Handshake,
+  Plus, Trash2, Pencil, Check, X, ChevronDown, ChevronUp, Handshake, FileText,
 } from "lucide-react";
 
 const TECH_OPTIONS = [
@@ -132,6 +133,16 @@ export default function DashboardPage() {
     setActionLoading(appId);
     await updateApplicationStatus(token, appId, status);
     await loadReceivedForPosition(positionId);
+    setActionLoading(null);
+  };
+
+  const handleDownloadCv = async (appId: string) => {
+    if (!token) return;
+    setActionLoading(`cv-${appId}`);
+    try {
+      const { url } = await getApplicationCvDownloadUrl(token, appId);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch {}
     setActionLoading(null);
   };
 
@@ -569,6 +580,11 @@ export default function DashboardPage() {
                                   </div>
                                   <p style={{ margin: "2px 0 0", fontSize: 11, color: "var(--text-muted)" }}>{app.applicantEmail}</p>
                                   {app.message && <p style={{ margin: "6px 0 0", fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5 }}>{app.message}</p>}
+                                  {app.hasCv && (
+                                    <button onClick={() => handleDownloadCv(app.id)} disabled={actionLoading === `cv-${app.id}`} style={{ display: "inline-flex", alignItems: "center", gap: 5, marginTop: 8, padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer", background: "rgba(0,209,255,0.08)", border: "1px solid rgba(0,209,255,0.2)", color: "var(--accent-cyan)", opacity: actionLoading === `cv-${app.id}` ? 0.5 : 1 }}>
+                                      <FileText size={12} /> Download CV
+                                    </button>
+                                  )}
                                   <p style={{ margin: "4px 0 0", fontSize: 11, color: "var(--text-muted)" }}>{new Date(app.createdAt).toLocaleDateString()}</p>
                                 </div>
                                 {app.status === "PENDING" && (
@@ -678,6 +694,11 @@ export default function DashboardPage() {
                                       </div>
                                       <p style={{ margin: "2px 0 0", fontSize: 11, color: "var(--text-muted)" }}>{app.applicantEmail}</p>
                                       {app.message && <p style={{ margin: "6px 0 0", fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5 }}>{app.message}</p>}
+                                      {app.hasCv && (
+                                        <button onClick={() => handleDownloadCv(app.id)} disabled={actionLoading === `cv-${app.id}`} style={{ display: "inline-flex", alignItems: "center", gap: 5, marginTop: 8, padding: "4px 10px", borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: "pointer", background: "rgba(0,209,255,0.08)", border: "1px solid rgba(0,209,255,0.2)", color: "var(--accent-cyan)", opacity: actionLoading === `cv-${app.id}` ? 0.5 : 1 }}>
+                                          <FileText size={12} /> Download CV
+                                        </button>
+                                      )}
                                       <p style={{ margin: "4px 0 0", fontSize: 11, color: "var(--text-muted)" }}>{new Date(app.createdAt).toLocaleDateString()}</p>
                                     </div>
                                     {app.status === "PENDING" && (

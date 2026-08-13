@@ -5,12 +5,14 @@ export async function fetchApi<T>(
   endpoint: string,
   options?: RequestInit
 ): Promise<T> {
-  const { headers: extraHeaders, ...restOptions } = options ?? {};
+  const { headers: extraHeaders, body, ...restOptions } = options ?? {};
+  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
 
   const res = await fetch(`${API_URL}${endpoint}`, {
     ...restOptions,
+    body,
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(extraHeaders as Record<string, string>),
     },
   });
