@@ -24,8 +24,6 @@ export default function HomePage() {
     <>
       <Hero />
 
-      <HiringSection />
-
       {/* Directory Section */}
       <section id="directory" style={{ position: "relative", padding: "0 24px 80px" }}>
         <div style={{ maxWidth: 1100, margin: "0 auto", width: "100%" }}>
@@ -78,6 +76,8 @@ export default function HomePage() {
           )}
         </div>
       </section>
+
+      <HiringSection />
     </>
   );
 }
